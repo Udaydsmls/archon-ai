@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./runs.db"
     chroma_persist_dir: str = "./chroma_db"
     primary_model: str = "claude-sonnet-4-6"
-    critic_model: str = "claude-haiku-4-5-20251001"
+    critic_model: str = "claude-opus-4-7"
     max_reflection_cycles: int = 3
     critique_pass_threshold: float = 7.0
     jwt_secret: str = "change-me-in-production"

@@ -37,7 +37,7 @@ CriticAgent    ──── Scores draft 0–10, returns structured feedback
 | `ResearchAgent` | ReAct (Reason + Act loop) | claude-sonnet-4-6 |
 | `RAGAgent` | Retrieval-Augmented Generation | claude-sonnet-4-6 |
 | `SynthesisAgent` | Tool-augmented generation | claude-sonnet-4-6 |
-| `CriticAgent` | Self-reflection with structured JSON output | claude-haiku-4-5 |
+| `CriticAgent` | Self-reflection with structured JSON output | claude-opus-4-7 |
 
 ### ReAct Loop
 The `ResearchAgent` iterates: **Think → Tool Call → Observe → Think** until it reaches a final answer. Tools available: `web_search` (Tavily) and `scrape_url` (BeautifulSoup).
@@ -251,7 +251,7 @@ API available at `http://localhost:8000`. Interactive docs at `http://localhost:
 | `ANTHROPIC_API_KEY` | Anthropic API key | required |
 | `TAVILY_API_KEY` | Tavily search API key | required |
 | `PRIMARY_MODEL` | Model for research/synthesis agents | `claude-sonnet-4-6` |
-| `CRITIC_MODEL` | Model for critic agent | `claude-haiku-4-5-20251001` |
+| `CRITIC_MODEL` | Model for critic agent | `claude-opus-4-7` |
 | `MAX_REFLECTION_CYCLES` | Max critique-revise iterations | `3` |
 | `CRITIQUE_PASS_THRESHOLD` | Minimum score to finalize report | `7.0` |
 | `CHROMA_PERSIST_DIR` | Path for ChromaDB persistence | `./chroma_db` |

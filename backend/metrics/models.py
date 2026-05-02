@@ -3,6 +3,12 @@ from datetime import datetime
 
 
 _COST_RATES: dict[str, dict[str, float]] = {
+    "claude-opus-4-7": {
+        "input": 15.0,
+        "output": 75.0,
+        "cache_read": 1.50,
+        "cache_write": 18.75,
+    },
     "claude-sonnet-4-6": {
         "input": 3.0,
         "output": 15.0,
