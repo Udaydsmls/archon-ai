@@ -1,4 +1,4 @@
-# Multi-Agent Research Platform
+# Archon
 
 A production-grade multi-agent system that autonomously researches a topic, retrieves relevant documents, synthesizes findings, and self-critiques its output — served via a REST API with real-time streaming.
 

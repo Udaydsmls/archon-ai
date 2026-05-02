@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.api.routes import router
 
 app = FastAPI(
-    title="Multi-Agent Research Platform",
+    title="Archon",
     description="Production-grade multi-agent system for autonomous research and synthesis.",
     version="1.0.0",
 )
