@@ -226,8 +226,8 @@ backend/
 ### Local
 
 ```bash
-git clone https://github.com/Udaydsmls/agentic-ai.git
-cd agentic-ai
+git clone https://github.com/Udaydsmls/archon-ai.git
+cd archon-ai
 pip install -r requirements.txt
 cp .env.example .env          # add your API keys
 python -m backend.main
