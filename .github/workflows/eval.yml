@@ -8,11 +8,6 @@ jobs:
   evaluate:
     runs-on: ubuntu-latest
 
-    services:
-      archon-api:
-        image: python:3.12-slim
-        options: --health-cmd "curl -f http://localhost:8000/docs || exit 1" --health-interval 10s --health-retries 5
-
     steps:
       - uses: actions/checkout@v4
 
@@ -32,11 +27,20 @@ jobs:
           python -m backend.main &
           sleep 10
 
+      - name: Wait for API to be ready
+        run: |
+          for i in $(seq 1 10); do
+            curl -sf http://localhost:8000/docs && break
+            sleep 3
+          done
+
       - name: Run evaluation suite
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ARCHON_API_BASE: http://localhost:8000/api/v1
-        run: python -m evaluation.run_eval --suite all
+        run: |
+          mkdir -p evaluation/results
+          python -m evaluation.run_eval --suite all
 
       - name: Upload evaluation results
         if: always()
