@@ -1,8 +1,7 @@
 name: Evaluation Suite
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   evaluate:
