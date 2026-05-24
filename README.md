@@ -74,7 +74,7 @@ python -m evaluation.run_eval --suite deepeval  # hallucination, bias, answer re
 python -m evaluation.run_eval --suite all       # exits with code 1 if any metric fails
 ```
 
-Results are saved to `evaluation/results/`. A GitHub Actions workflow runs the suite on every push to `main`.
+Results are saved to `evaluation/results/`. A GitHub Actions workflow is available for manual runs via **Actions → Evaluation Suite → Run workflow**.
 
 ### C — LangSmith Tracing
 
@@ -225,16 +225,16 @@ backend/
 │   ├── web_search.py
 │   ├── url_scraper.py
 │   ├── code_executor.py
-│   └── vision_tool.py              # Upgrade F
+│   └── vision_tool.py
 ├── rag/
 │   ├── chunker.py
 │   ├── vector_store.py
-│   ├── retriever.py                # SemanticRetriever (provider-injected)
-│   ├── hybrid_retriever.py         # Upgrade A — BM25 + dense RRF
-│   ├── ingestor.py                 # Provider-injected
-│   ├── batch_ingestor.py           # Upgrade E — Anthropic Batch API
+│   ├── retriever.py
+│   ├── hybrid_retriever.py
+│   ├── ingestor.py
+│   ├── batch_ingestor.py
 │   └── providers/
-│       ├── base.py                 # VectorStoreProvider ABC
+│       ├── base.py
 │       ├── chroma_provider.py
 │       ├── pinecone_provider.py
 │       ├── weaviate_provider.py
@@ -242,35 +242,35 @@ backend/
 ├── agents/
 │   ├── base.py
 │   ├── prompts.py
-│   ├── research_agent.py           # + vision branch (Upgrade F)
+│   ├── research_agent.py
 │   ├── rag_agent.py
 │   ├── critic_agent.py
 │   ├── synthesis_agent.py
-│   └── orchestrator.py             # + provider/retriever selection
+│   └── orchestrator.py
 ├── safety/
-│   ├── config.py                   # Upgrade D
+│   ├── config.py
 │   └── guards.py
 ├── storage/
-│   ├── base.py                     # Upgrade G
+│   ├── base.py
 │   ├── sqlite_backend.py
 │   ├── dynamo_backend.py
 │   └── factory.py
 ├── api/
-│   ├── models.py                   # + safety_warnings, batch models
+│   ├── models.py
 │   ├── auth.py
 │   ├── streaming.py
-│   └── routes.py                   # + multimodal + batch ingest endpoints
+│   └── routes.py
 └── finetuning/
     ├── data_generator.py
     └── evaluator.py
 
 evaluation/
-├── golden_dataset.json             # Upgrade B — 20-question dataset
+├── golden_dataset.json
 ├── ragas_eval.py
 ├── deepeval_eval.py
 └── run_eval.py
 
-.github/workflows/eval.yml          # Upgrade B — CI evaluation gate
+.github/workflows/eval.yml
 ```
 
 ---
