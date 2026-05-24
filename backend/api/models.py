@@ -16,6 +16,7 @@ class RunSummary(BaseModel):
     reflection_cycles: int
     critique_score: float
     metrics: dict
+    safety_warnings: list[str] = []
 
 
 class MetricsSummary(BaseModel):
@@ -38,3 +39,16 @@ class TokenResponse(BaseModel):
 
     access_token: str
     token_type: str = "bearer"
+
+
+class BatchIngestRequest(BaseModel):
+    """Request body for bulk document ingestion via the Anthropic Batch API."""
+
+    urls: list[str] = []
+    file_paths: list[str] = []
+
+
+class BatchIngestResponse(BaseModel):
+    """Response containing the Anthropic batch job ID for status tracking."""
+
+    batch_id: str

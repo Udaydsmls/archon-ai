@@ -15,4 +15,5 @@ class AgentState(TypedDict):
     final_report: str
     reflection_cycles: int
     metrics: Annotated[list[dict], operator.add]
+    uploaded_files: list[dict]
     error: str | None

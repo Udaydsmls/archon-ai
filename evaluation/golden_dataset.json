@@ -1,0 +1,142 @@
+[
+  {
+    "id": "q001",
+    "question": "What are the key differences between transformer and RNN architectures in NLP?",
+    "ideal_answer": "Transformers use self-attention mechanisms enabling parallel processing and capturing long-range dependencies without sequential bottlenecks, while RNNs process sequences step-by-step using hidden states, making them slower and prone to vanishing gradients over long sequences.",
+    "relevant_doc_ids": [],
+    "category": "factual"
+  },
+  {
+    "id": "q002",
+    "question": "How does retrieval-augmented generation improve LLM accuracy?",
+    "ideal_answer": "RAG reduces hallucinations by grounding LLM responses in retrieved external documents, providing up-to-date factual context the model was not trained on, and enabling source attribution for generated claims.",
+    "relevant_doc_ids": [],
+    "category": "factual"
+  },
+  {
+    "id": "q003",
+    "question": "What is the ReAct prompting pattern and how does it work?",
+    "ideal_answer": "ReAct interleaves reasoning traces (Thought) with action execution (Act) and observation parsing (Observe) in a loop, allowing LLMs to dynamically plan, call tools, and revise their approach based on tool results.",
+    "relevant_doc_ids": [],
+    "category": "factual"
+  },
+  {
+    "id": "q004",
+    "question": "Compare Pinecone and Weaviate as vector databases for production RAG systems.",
+    "ideal_answer": "Pinecone is a fully managed serverless vector database optimised for high-throughput similarity search with simple scaling, while Weaviate is open-source with native hybrid BM25+vector search, rich schema support, and self-hosting options.",
+    "relevant_doc_ids": [],
+    "category": "comparative"
+  },
+  {
+    "id": "q005",
+    "question": "What are the main evaluation metrics used to assess RAG pipeline quality?",
+    "ideal_answer": "Key metrics include faithfulness (does the answer stay grounded in retrieved context), answer relevancy (does it address the question), context precision (are retrieved docs relevant), and context recall (were all relevant docs retrieved).",
+    "relevant_doc_ids": [],
+    "category": "factual"
+  },
+  {
+    "id": "q006",
+    "question": "How does prompt caching reduce API costs in large language model applications?",
+    "ideal_answer": "Prompt caching reuses previously computed key-value states for static prompt prefixes (such as system prompts and tool schemas), avoiding repeated computation. Cache reads are billed at a fraction of full input token cost.",
+    "relevant_doc_ids": [],
+    "category": "factual"
+  },
+  {
+    "id": "q007",
+    "question": "What is Reciprocal Rank Fusion and why is it used in hybrid search?",
+    "ideal_answer": "RRF combines multiple ranked lists by summing reciprocal ranks (1/(k+rank)) for each document across lists, producing a stable merged ranking without requiring score normalisation across different retrieval methods.",
+    "relevant_doc_ids": [],
+    "category": "factual"
+  },
+  {
+    "id": "q008",
+    "question": "Explain the difference between fine-tuning and in-context learning for LLMs.",
+    "ideal_answer": "Fine-tuning updates model weights on task-specific data for persistent behaviour change, while in-context learning provides examples within the prompt at inference time without weight updates, making it more flexible but limited by context length.",
+    "relevant_doc_ids": [],
+    "category": "comparative"
+  },
+  {
+    "id": "q009",
+    "question": "What security risks exist in multi-agent AI systems and how can they be mitigated?",
+    "ideal_answer": "Key risks include prompt injection via tool outputs, agent impersonation, data exfiltration through tool calls, and runaway loops. Mitigations include input sanitisation, tool output validation, rate limiting, human-in-the-loop checkpoints, and output guardrails.",
+    "relevant_doc_ids": [],
+    "category": "multi-hop"
+  },
+  {
+    "id": "q010",
+    "question": "How does LangGraph differ from LangChain for building agent workflows?",
+    "ideal_answer": "LangGraph extends LangChain with a graph-based stateful execution model supporting cycles, conditional branching, and persistent checkpointing, making it suited for complex multi-step agents, whereas LangChain's sequential chains lack native cycle support.",
+    "relevant_doc_ids": [],
+    "category": "comparative"
+  },
+  {
+    "id": "q011",
+    "question": "What is the role of the critic agent in a self-reflection multi-agent pipeline?",
+    "ideal_answer": "The critic agent evaluates generated drafts on factual accuracy, completeness, coherence, and citation quality, assigns a numerical score, and returns structured feedback that the synthesis agent uses to revise its output in subsequent reflection cycles.",
+    "relevant_doc_ids": [],
+    "category": "factual"
+  },
+  {
+    "id": "q012",
+    "question": "How do DynamoDB partition keys affect query performance for multi-tenant applications?",
+    "ideal_answer": "Partition keys determine data distribution across DynamoDB shards. Using tenant_id as the partition key co-locates a tenant's data on the same shard for efficient range queries but risks hot partitions for high-traffic tenants, requiring adaptive capacity or shard splitting.",
+    "relevant_doc_ids": [],
+    "category": "multi-hop"
+  },
+  {
+    "id": "q013",
+    "question": "What are the trade-offs between synchronous and streaming API responses for LLM applications?",
+    "ideal_answer": "Synchronous responses are simpler to implement and consume but block the caller until completion, increasing perceived latency. Streaming via SSE or WebSockets delivers tokens progressively, improving perceived responsiveness but requiring more complex client-side handling.",
+    "relevant_doc_ids": [],
+    "category": "comparative"
+  },
+  {
+    "id": "q014",
+    "question": "How does the Anthropic Messages Batch API reduce cost for bulk LLM workloads?",
+    "ideal_answer": "The Batch API processes requests asynchronously at a discounted rate (typically 50% less than synchronous calls) by batching multiple prompts into a single job, trading real-time response for cost efficiency on workloads that tolerate latency.",
+    "relevant_doc_ids": [],
+    "category": "factual"
+  },
+  {
+    "id": "q015",
+    "question": "What is hierarchical delegation in multi-agent systems?",
+    "ideal_answer": "Hierarchical delegation is an orchestration pattern where a top-level agent decomposes a task and assigns subtasks to specialist sub-agents, collecting their results and making routing decisions, without sub-agents having direct knowledge of each other.",
+    "relevant_doc_ids": [],
+    "category": "factual"
+  },
+  {
+    "id": "q016",
+    "question": "Describe how JWT authentication works in a REST API context.",
+    "ideal_answer": "A client exchanges credentials for a signed JWT containing claims (subject, expiry). The server validates the JWT signature on each request using a shared secret or public key, extracting the subject claim to identify the caller without server-side session storage.",
+    "relevant_doc_ids": [],
+    "category": "factual"
+  },
+  {
+    "id": "q017",
+    "question": "What guardrail techniques prevent PII leakage in LLM-generated outputs?",
+    "ideal_answer": "Techniques include regex-based PII detection and redaction (email, phone, SSN patterns), named entity recognition to identify person names and addresses, output classifiers trained to detect sensitive data, and post-processing redaction before the response is returned to the caller.",
+    "relevant_doc_ids": [],
+    "category": "factual"
+  },
+  {
+    "id": "q018",
+    "question": "How does BM25 keyword search complement dense vector search in hybrid retrieval?",
+    "ideal_answer": "BM25 excels at exact keyword and rare-term matching, while dense retrieval captures semantic similarity for paraphrase and concept matching. Hybrid approaches fuse both signals to handle queries where either method alone would fail.",
+    "relevant_doc_ids": [],
+    "category": "factual"
+  },
+  {
+    "id": "q019",
+    "question": "What are the advantages of using the Strategy pattern for pluggable backends in Python?",
+    "ideal_answer": "The Strategy pattern decouples algorithm selection from usage, allowing backends (vector stores, storage engines) to be swapped at runtime via dependency injection without modifying consuming code, satisfying the Open/Closed Principle.",
+    "relevant_doc_ids": [],
+    "category": "factual"
+  },
+  {
+    "id": "q020",
+    "question": "How can multimodal inputs improve research agent outputs compared to text-only queries?",
+    "ideal_answer": "Images and PDFs provide visual and structured data (charts, tables, diagrams) that text queries cannot convey. A vision-capable research agent can extract quantitative data from charts, read figures in papers, and incorporate non-textual evidence into its synthesis.",
+    "relevant_doc_ids": [],
+    "category": "multi-hop"
+  }
+]

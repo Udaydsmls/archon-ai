@@ -3,14 +3,14 @@ import time
 from backend.agents.base import BaseAgent
 from backend.agents.prompts import get_prompt
 from backend.metrics.tracker import MetricsTracker
-from backend.rag.retriever import HybridRetriever
+from backend.rag.retriever import SemanticRetriever
 from backend.state.schema import AgentState
 
 
 class RAGAgent(BaseAgent):
     """Retrieves relevant document context and extracts key information for the pipeline."""
 
-    def __init__(self, tracker: MetricsTracker, retriever: HybridRetriever) -> None:
+    def __init__(self, tracker: MetricsTracker, retriever: SemanticRetriever) -> None:
         super().__init__(tracker)
         self._retriever = retriever
         self._system_prompt = get_prompt("rag_system_v1")

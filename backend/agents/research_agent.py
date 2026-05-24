@@ -6,6 +6,7 @@ from backend.metrics.tracker import MetricsTracker
 from backend.state.schema import AgentState
 from backend.tools.base import Tool
 from backend.tools.url_scraper import URLScraperTool
+from backend.tools.vision_tool import VisionTool
 from backend.tools.web_search import WebSearchTool
 
 
@@ -14,18 +15,39 @@ class ResearchAgent(BaseAgent):
 
     def __init__(self, tracker: MetricsTracker) -> None:
         super().__init__(tracker)
-        tools = [WebSearchTool(), URLScraperTool()]
+        tools = [WebSearchTool(), URLScraperTool(), VisionTool()]
         self._tool_map: dict[str, Tool] = {t.name: t for t in tools}
         self._tool_schemas = [t.to_anthropic_schema() for t in tools]
         self._system_prompt = get_prompt("research_system_v1")
+        self._vision_tool = VisionTool()
 
     @property
     def name(self) -> str:
         return "research_agent"
 
+    def _extract_uploaded_files(self, state: AgentState) -> str:
+        """Run vision extraction on any uploaded files and return combined text."""
+        uploaded = state.get("uploaded_files", [])
+        if not uploaded:
+            return ""
+        extractions = []
+        for file in uploaded:
+            result = self._vision_tool.run(
+                base64_data=file.get("base64_data", ""),
+                media_type=file.get("media_type", "image/jpeg"),
+                filename=file.get("filename", ""),
+            )
+            extractions.append(result)
+        return "\n\n".join(extractions)
+
     def run(self, state: AgentState) -> dict:
         """Execute the ReAct loop and return research results as a state update."""
-        messages = [{"role": "user", "content": state["query"]}]
+        file_context = self._extract_uploaded_files(state)
+        initial_content = (
+            f"{file_context}\n\nQuery: {state['query']}" if file_context else state["query"]
+        )
+
+        messages = [{"role": "user", "content": initial_content}]
         tool_calls_count = 0
         start = time.perf_counter()
         final_response = None
@@ -70,7 +92,6 @@ class ResearchAgent(BaseAgent):
         metric_entry = self._record_metric(
             state["run_id"], final_response.usage, latency, tool_calls_count
         )
-
         final_text = next(
             (b.text for b in final_response.content if hasattr(b, "text")), ""
         )

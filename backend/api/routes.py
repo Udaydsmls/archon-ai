@@ -1,9 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import base64
+
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from fastapi.responses import StreamingResponse
 
 from backend.agents.orchestrator import Orchestrator
 from backend.api.auth import create_access_token, get_current_user, validate_api_key
 from backend.api.models import (
+    BatchIngestRequest,
+    BatchIngestResponse,
     MetricsSummary,
     QueryRequest,
     RunSummary,
@@ -11,9 +15,14 @@ from backend.api.models import (
     TokenResponse,
 )
 from backend.api.streaming import stream_run
+from backend.rag.batch_ingestor import BatchIngestor
+from backend.rag.chunker import TextChunker
+from backend.rag.providers.factory import get_vector_store_provider
+from backend.safety.guards import GuardRailsValidator
 
 router = APIRouter()
 _orchestrator = Orchestrator()
+_validator = GuardRailsValidator()
 
 
 @router.post("/auth/token", response_model=TokenResponse)
@@ -32,14 +41,16 @@ def run_query(
 ) -> RunSummary:
     """Execute the full multi-agent pipeline synchronously and return the result."""
     final_state = _orchestrator.run(request.query)
+    validated_report, warnings = _validator.validate(final_state.get("final_report", ""))
     metrics = _orchestrator.get_metrics(final_state["run_id"])
     return RunSummary(
         run_id=final_state["run_id"],
         query=request.query,
-        final_report=final_state.get("final_report", ""),
+        final_report=validated_report,
         reflection_cycles=final_state.get("reflection_cycles", 0),
         critique_score=final_state.get("critique_score", 0.0),
         metrics=metrics,
+        safety_warnings=warnings,
     )
 
 
@@ -52,6 +63,49 @@ def stream_query(
         stream_run(_orchestrator, request.query),
         media_type="text/event-stream",
     )
+
+
+@router.post("/run/multimodal", response_model=RunSummary)
+async def run_multimodal(
+    query: str = Form(...),
+    files: list[UploadFile] = File(default=[]),
+    _: str = Depends(get_current_user),
+) -> RunSummary:
+    """Accept a text query alongside image or PDF uploads and run the full pipeline."""
+    uploaded_files = []
+    for upload in files:
+        content = await upload.read()
+        uploaded_files.append(
+            {
+                "filename": upload.filename or "",
+                "media_type": upload.content_type or "application/octet-stream",
+                "base64_data": base64.b64encode(content).decode("utf-8"),
+            }
+        )
+
+    final_state = _orchestrator.run(query, uploaded_files=uploaded_files)
+    validated_report, warnings = _validator.validate(final_state.get("final_report", ""))
+    metrics = _orchestrator.get_metrics(final_state["run_id"])
+    return RunSummary(
+        run_id=final_state["run_id"],
+        query=query,
+        final_report=validated_report,
+        reflection_cycles=final_state.get("reflection_cycles", 0),
+        critique_score=final_state.get("critique_score", 0.0),
+        metrics=metrics,
+        safety_warnings=warnings,
+    )
+
+
+@router.post("/ingest/batch", response_model=BatchIngestResponse)
+def ingest_batch(
+    request: BatchIngestRequest, _: str = Depends(get_current_user)
+) -> BatchIngestResponse:
+    """Submit a bulk document ingestion job using the Anthropic Batch API."""
+    provider = get_vector_store_provider()
+    ingestor = BatchIngestor(provider=provider, chunker=TextChunker())
+    batch_id = ingestor.ingest_batch(urls=request.urls, file_paths=request.file_paths)
+    return BatchIngestResponse(batch_id=batch_id)
 
 
 @router.get("/run/{run_id}/metrics", response_model=MetricsSummary)

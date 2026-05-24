@@ -10,9 +10,9 @@ from backend.agents.research_agent import ResearchAgent
 from backend.agents.synthesis_agent import SynthesisAgent
 from backend.config import settings
 from backend.metrics.tracker import MetricsTracker
-from backend.rag.chunker import TextChunker
-from backend.rag.retriever import HybridRetriever
-from backend.rag.vector_store import VectorStore
+from backend.rag.hybrid_retriever import HybridRetriever
+from backend.rag.providers.factory import get_vector_store_provider
+from backend.rag.retriever import SemanticRetriever
 from backend.state.schema import AgentState
 
 
@@ -30,7 +30,7 @@ def _finalize(state: AgentState) -> dict:
     return {"final_report": state.get("draft", "")}
 
 
-def _initialize_state(query: str) -> AgentState:
+def _initialize_state(query: str, uploaded_files: list[dict] | None = None) -> AgentState:
     """Build the initial AgentState for a new run."""
     return AgentState(
         query=query,
@@ -43,6 +43,7 @@ def _initialize_state(query: str) -> AgentState:
         final_report="",
         reflection_cycles=0,
         metrics=[],
+        uploaded_files=uploaded_files or [],
         error=None,
     )
 
@@ -56,8 +57,12 @@ class Orchestrator:
 
     def _build_graph(self):
         """Construct and compile the LangGraph StateGraph."""
-        vector_store = VectorStore()
-        retriever = HybridRetriever(vector_store)
+        provider = get_vector_store_provider()
+        retriever = (
+            HybridRetriever(provider)
+            if settings.use_hybrid_retrieval
+            else SemanticRetriever(provider)
+        )
 
         research_agent = ResearchAgent(self._tracker)
         rag_agent = RAGAgent(self._tracker, retriever)
@@ -85,16 +90,15 @@ class Orchestrator:
         checkpointer = SqliteSaver.from_conn_string(settings.database_url)
         return graph.compile(checkpointer=checkpointer)
 
-    def run(self, query: str) -> AgentState:
+    def run(self, query: str, uploaded_files: list[dict] | None = None) -> AgentState:
         """Execute the full pipeline for a query and return the final state."""
-        initial_state = _initialize_state(query)
+        initial_state = _initialize_state(query, uploaded_files)
         config = {"configurable": {"thread_id": initial_state["run_id"]}}
-        final_state = self._graph.invoke(initial_state, config=config)
-        return final_state
+        return self._graph.invoke(initial_state, config=config)
 
-    def stream(self, query: str):
+    def stream(self, query: str, uploaded_files: list[dict] | None = None):
         """Stream state updates node-by-node for real-time consumption."""
-        initial_state = _initialize_state(query)
+        initial_state = _initialize_state(query, uploaded_files)
         config = {"configurable": {"thread_id": initial_state["run_id"]}}
         yield from self._graph.stream(initial_state, config=config)
 
